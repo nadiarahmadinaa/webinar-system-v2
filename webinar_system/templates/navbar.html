@@ -1,0 +1,48 @@
+{% load static %}
+<nav class="fixed top-0 left-0 z-40 w-screen bg-white shadow-md font-['Poppins']">
+    <div class="w-full mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+            <div class="flex items-center">
+                <img src="{% static 'images/logo.png' %}"
+                     alt="RosoJogja logo"
+                     class="h-10 w-10 mr-2" />
+                <a href="{% url 'main:show_main' %}">
+                    <h1 class="text-xl font-bold text-[#FF7043] text-center">Webinar System</h1>
+                </a>
+            </div>
+                <a href="{% url 'main:login' %}"
+                    class="bg-[#FF7043] text-white text-sm font-bold py-2 px-4 rounded transition duration-300 text-center mr-2 hover:bg-orange-600">Login</a>
+                <a href="{% url 'main:register' %}"
+                    class="bg-[#D13529] text-white text-sm font-bold py-2 px-4 rounded transition duration-300 text-center hover:bg-red-800">Register</a>
+            </div>
+            <div class="md:hidden flex items-center">
+                <button class="mobile-menu-button">
+                    <svg class="w-6 h-6 text-[#D13529]"
+                         fill="none"
+                         stroke-linecap="round"
+                         stroke-linejoin="round"
+                         stroke-width="2"
+                         viewBox="0 0 24 24"
+                         stroke="currentColor">
+                        <path d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+    <!-- Mobile menu -->
+    <div class="mobile-menu hidden md:hidden px-4 w-full md:max-w-full">
+        <div class="pt-2 pb-3 space-y-1 mx-auto">
+            <a href="{% url 'main:login' %}"
+                class="block text-center font-bold py-2 px-4 rounded transition duration-300 mb-2"
+                style="background-color: #FF7043;
+                        color: #FFFFFF;
+                        font-size: 0.875rem">Login</a>
+            <a href="{% url 'main:register' %}"
+                class="block text-center font-bold py-2 px-4 rounded transition duration-300"
+                style="background-color: #D13529;
+                        color: #FFFFFF;
+                        font-size: 0.875rem">Register</a>
+        </div>
+    </div>
+</nav>

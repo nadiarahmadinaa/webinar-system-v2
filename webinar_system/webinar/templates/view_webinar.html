@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h1>{{ webinar.webinar_name }}</h1>
+  <p><strong>Date:</strong> {{ webinar.date }}</p>
+  <p><strong>Time:</strong> {{ webinar.time }}</p>
+  <p><strong>Organizer:</strong> {{ webinar.organizer }}</p>
+  <p><strong>Description:</strong> {{ webinar.description }}</p>
+  <a href="{% url 'webinar:webinar_home' %}" class="btn btn-primary">Back to Webinars</a>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h2 class="mb-4">Edit Webinar: {{ webinar.webinar_name }}</h2>
+
+    <form method="post">
+      {% csrf_token %}
+      
+      <!-- Webinar Name Field -->
+      <div class="form-group">
+        <label for="id_webinar_name">Webinar Name</label>
+        {{ form.webinar_name }}
+        {% if form.webinar_name.errors %}
+          <div class="invalid-feedback d-block">
+            {% for error in form.webinar_name.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Date Field -->
+      <div class="form-group">
+        <label for="id_date">Date</label>
+        {{ form.date }}
+        {% if form.date.errors %}
+          <div class="invalid-feedback d-block">
+            {% for error in form.date.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Time Field -->
+      <div class="form-group">
+        <label for="id_time">Time</label>
+        {{ form.time }}
+        {% if form.time.errors %}
+          <div class="invalid-feedback d-block">
+            {% for error in form.time.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Organizer Field -->
+      <div class="form-group">
+        <label for="id_organizer">Organizer</label>
+        {{ form.organizer }}
+        {% if form.organizer.errors %}
+          <div class="invalid-feedback d-block">
+            {% for error in form.organizer.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Description Field -->
+      <div class="form-group">
+        <label for="id_description">Description</label>
+        {{ form.description }}
+        {% if form.description.errors %}
+          <div class="invalid-feedback d-block">
+            {% for error in form.description.errors %}
+              <p>{{ error }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-success">Save Changes</button>
+      <a href="{% url 'webinar:webinar_home' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+{% endblock %}

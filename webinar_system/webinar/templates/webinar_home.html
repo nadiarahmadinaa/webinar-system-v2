@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Webinars</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div id="message-container" class="container mt-3">
+    </div>
+    <div class="container mt-5">
+        <h1>Your Webinars</h1>
+        <a href="/webinar/make_webinar/"
+           class="bg-[#FF7043] hover:bg-[#FF7043]/80 text-[#FFFFFF] font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out">
+            New Webinar
+        </a>
+        <table class="table table-striped" id="webinar-table">
+            <thead>
+                <tr>
+                    <th>Webinar Name</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Organizer</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Webinar rows will be populated here asynchronously -->
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        function fetchWebinars() {
+            fetch('/webinar/api/')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.querySelector('#webinar-table tbody');
+                    tableBody.innerHTML = ''; // Clear existing rows
+
+                    if (data.webinars.length > 0) {
+                        data.webinars.forEach(webinar => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${webinar.webinar_name}</td>
+                                <td>${webinar.date}</td>
+                                <td>${webinar.time}</td>
+                                <td>${webinar.organizer}</td>
+                                <td>
+                                    <a href="/webinar/${webinar.id}/" class="btn btn-info">View</a>
+                                    <a href="/webinar/edit_webinar/${webinar.id}/" class="btn btn-warning">Edit</a>
+                                    <a href="/webinar/delete_webinar/${webinar.id}/" class="btn btn-danger">Delete</a>
+                                </td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                    } else {
+                        const row = document.createElement('tr');
+                        row.innerHTML = '<td colspan="5" class="text-center">No webinars yet.</td>';
+                        tableBody.appendChild(row);
+                    }
+                })
+                .catch(error => console.error('Error fetching webinars:', error));
+        }
+
+        function showMessage(message, level) {
+            const messageContainer = document.getElementById('message-container');
+
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('alert', 'alert-dismissible', 'fade', 'show');
+            
+            // Add the message level classes (success, error, etc.)
+            if (level === 20) { // Info
+                messageDiv.classList.add('alert-info');
+            } else if (level === 25) { // Success
+                messageDiv.classList.add('alert-success');
+            } else if (level === 40) { // Error
+                messageDiv.classList.add('alert-danger');
+            }
+
+            messageDiv.innerHTML = `${message} <button type="button" class="close" data-dismiss="alert">&times;</button>`;
+            messageContainer.appendChild(messageDiv);
+        }
+
+        window.onload = fetchWebinars;
+    </script>
+</body>
+</html>

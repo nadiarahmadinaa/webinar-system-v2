@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block meta %}
+    <title>Webinar System - One time stop for webinars</title>
+{% endblock meta %}
+{% block content %}
+    {% include 'navbar.html' %}
+    <!-- Hero Section -->
+    <section class="min-h-screen relative">
+        <!-- Main Content -->
+        <div class="relative pt-24 px-4 md:px-10">
+            <div class="flex flex-col items-center justify-center min-h-[60vh] text-center">
+                <h1 class="text-5xl md:text-7xl font-bold text-rj-orange mb-6">RosoJogja</h1>
+                <p class="text-xl md:text-2xl mb-8 max-w-2xl">
+                    Temukan dan pesan kuliner Jogja dengan mudah:
+                    <br>
+                    dari angkringan hingga restoran modern
+                </p>
+                <a href="#explore"
+                   class="bg-[#FF7043] text-white px-8 py-3 rounded-full hover:bg-opacity-90 transition-all">
+                    Mulai Eksplorasi
+                </a>
+            </div>
+        </div>
+        <!-- User Info Section (if authenticated) -->
+        {% if user.is_authenticated %}
+            <section class="py-8 px-4 md:px-10 relative -mt-32">
+                <div class="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl p-8 border border-opacity-10 border-[#FF7043]">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div class="flex items-center gap-4">
+                            <div class="w-16 h-16 bg-opacity-10 bg-[#FF7043] rounded-full flex items-center justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg"
+                                     class="w-8 h-8 text-[#FF7043]"
+                                     fill="none"
+                                     viewBox="0 0 24 24"
+                                     stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                            </div>
+                            <div>
+                                <h5 class="text-xl font-semibold text-[#333333]">
+                                    Selamat datang, <span class="text-[#FF7043]">{{ user.username }}</span>
+                                </h5>
+                                <p class="text-opacity-70 text-[#333333]">{{ user.get_role_display }}</p>
+                            </div>
+                        </div>
+                        <div class="text-sm text-opacity-70 text-[#333333]">
+                            Login terakhir: <span class="font-medium">{{ last_login }}</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        {% endif %}
+    </section>
+    <!-- Features Section -->
+    <section id="explore"
+             class="py-16 px-4 md:px-10 bg-opacity-5 bg-[#333333] min-h-screen pt-20 flex flex-col items-center justify-center gap-10">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl md:text-4xl font-bold text-[#333333] mb-6">Tentang RosoJogja</h2>
+            <p class="text-opacity-80 text-[#333333] text-lg mb-8">
+                RosoJogja adalah aplikasi kuliner yang dirancang khusus untuk membantu Anda menemukan dan memesan makanan atau minuman dari berbagai restoran dan tempat makan di Yogyakarta. Mulai dari makanan tradisional, angkringan, kuliner modern, hingga oleh-oleh khas Yogyakarta.
+            </p>
+        </div>
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold text-[#333333] text-center mb-12">Fitur Utama</h2>
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="text-center p-8 rounded-3xl bg-white shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-opacity-10 bg-[#FF7043] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="w-8 h-8 text-[#FF7043]"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-[#333333] mb-2">Kategori Kuliner</h3>
+                    <p class="text-opacity-70 text-[#333333]">Pilih berbagai kategori kuliner dari tradisional hingga modern</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="text-center p-8 rounded-3xl bg-white shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-opacity-10 bg-[#FF7043] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="w-8 h-8 text-[#FF7043]"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-[#333333] mb-2">Info Real-time</h3>
+                    <p class="text-opacity-70 text-[#333333]">Cek jam buka dan ketersediaan tempat secara real-time</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="text-center p-8 rounded-3xl bg-white shadow-lg hover:shadow-xl transition-shadow">
+                    <div class="w-16 h-16 bg-opacity-10 bg-[#FF7043] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="w-8 h-8 text-[#FF7043]"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl font-semibold text-[#333333] mb-2">Order & Promo</h3>
+                    <p class="text-opacity-70 text-[#333333]">Pesan makanan dan klaim promo dengan mudah</p>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-6xl mx-auto">
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Wishlist Feature -->
+                <div class="p-8 rounded-3xl bg-opacity-5 bg-[#FF7043] hover:bg-opacity-10 transition-colors">
+                    <h3 class="text-xl font-semibold text-[#333333] mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="w-6 h-6 text-[#FF7043]"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        Wishlist
+                    </h3>
+                    <p class="text-opacity-70 text-[#333333]">Simpan restoran favorit Anda untuk kunjungan berikutnya</p>
+                </div>
+                <!-- Reviews Feature -->
+                <div class="p-8 rounded-3xl bg-opacity-5 bg-[#FF7043] hover:bg-opacity-10 transition-colors">
+                    <h3 class="text-xl font-semibold text-[#333333] mb-4 flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                             class="w-6 h-6 text-[#FF7043]"
+                             fill="none"
+                             viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                        Ulasan & Rating
+                    </h3>
+                    <p class="text-opacity-70 text-[#333333]">Baca ulasan dan rating dari pengunjung lain sebelum memutuskan</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.7/dist/purify.min.js"></script>
+{% endblock content %}

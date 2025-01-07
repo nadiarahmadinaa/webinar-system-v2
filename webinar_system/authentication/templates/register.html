@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block meta %}
+<title>Register</title>
+{% endblock meta %}
+{% block content %}
+<section
+  class="min-h-screen flex items-center justify-center w-screen py-12 px-4 sm:px-6 lg:px-8 bg-[#FFFFFF]"
+>
+  <div class="bg-[#FFFFFF] p-10 rounded-xl form-style shadow-lg max-w-md w-full">
+    <div class="text-center text-2xl md:text-4xl font-bold text-[#FF7043]">
+      <h2>Create Your Account</h2>
+    </div>
+    <form
+      method="POST"
+      action=""
+      class="flex items-center justify-center flex-col gap-4 w-full my-7"
+      enctype="multipart/form-data"
+    >
+      {% csrf_token %}
+      <input type="hidden" name="remember" value="true" />
+      <div class="w-full flex flex-col gap-2">
+        {% for field in form %}
+        <div class="flex flex-col">
+          <label class="font-medium text-sm md:text-base text-[#333333]">
+            {{ field.label }}
+          </label>
+          <div class="relative">
+            {{ field }}
+            <div
+              class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"
+            >
+              {% if field.errors %}
+              <svg
+                class="h-5 w-5 text-red-500"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              {% endif %}
+            </div>
+          </div>
+          {% if field.errors %}
+          {% for error in field.errors %}
+          <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+          {% endfor %}
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+      <div class="w-full">
+        <input
+          class="w-full bg-[#FF7043] p-2 rounded-md text-[#FFFFFF] hover:bg-[#FF7043]/90 font-medium tracking-wide cursor-pointer !border-0"
+          type="submit"
+          value="Register"
+        />
+      </div>
+    </form>
+    {% if messages %}
+    <div class="mt-4">
+      {% for message in messages %}
+      <div
+        class="bg-[#FFE6E6] border border-red-400 text-red-700 px-4 py-3 rounded relative"
+        role="alert"
+      >
+        <span class="block sm:inline">{{ message }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <p class="w-full text-center text-sm md:text-base text-[#333333]">
+      Already have an account?
+      <a
+        href="{% url 'main:login' %}"
+        class="text-[#FF7043] hover:underline whitespace-nowrap"
+        >Login here</a
+      >
+    </p>
+  </div>
+</section>
+{% endblock content %}
