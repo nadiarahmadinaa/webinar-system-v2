@@ -1,6 +1,14 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Webinar</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+</head>
+<body>
 
-{% block content %}
   <div class="container mt-5">
     <h2 class="mb-4">Edit Webinar: {{ webinar.webinar_name }}</h2>
 
@@ -70,11 +78,92 @@
             {% endfor %}
           </div>
         {% endif %}
-      </div>
+    </div>
+    {% if webinar.certificate %}
+        <p><strong>Certificate:</strong> <a href="{{ webinar.certificate }}">Download Certificate</a></p>
+    {% endif %}
+    <div class="form-group">
+        <label for="id_certificate">Certificate (optional)</label>
+        <input type="hidden" id="certificate_url" name="certificate_url">
+        <button type="button" id="upload_certificate">Upload Certificate</button>
+    </div>
+
+    {% if webinar.photos.all %}
+        <p><strong>Photos:</strong></p>
+        <ul>
+            {% for photo in webinar.photos.all %}
+            <li>
+                <img src="{{ photo.image }}" alt="Webinar Photo" class="img-thumbnail" style="max-width: 200px;">
+            </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <div class="form-group">
+        <label for="id_photos">Photos (optional)</label>
+        <input type="hidden" id="photos_url" name="photos_url">
+        <button type="button" id="upload_photos">Upload Photos</button>
+    </div>
+
+    <div class="form-group form-check">
+        <input type="checkbox" class="form-check-input" id="id_auto_verify" name="auto_verify" {{ form.auto_verify.value|yesno:"checked," }}>
+        <label class="form-check-label" for="id_auto_verify">Auto Verify Participants</label>
+        {% if form.auto_verify.errors %}
+            <div class="invalid-feedback d-block">
+                {% for error in form.auto_verify.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
 
       <!-- Submit Button -->
       <button type="submit" class="btn btn-success">Save Changes</button>
       <a href="{% url 'webinar:webinar_home' %}" class="btn btn-secondary">Cancel</a>
     </form>
   </div>
-{% endblock %}
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script>
+      var cloudinaryWidgetCertificate = cloudinary.createUploadWidget({
+          cloudName: 'djlgki5uf', 
+          uploadPreset: 'python-uploads',
+          sources: ['local', 'camera'], 
+          multiple: false,
+          folder: 'webinar_certificates',
+          maxFileSize: 5 * 1024 * 1024,
+          allowedFormats: ['jpg', 'jpeg', 'png'],
+      }, (error, result) => { 
+          if (!error && result && result.event === "success") { 
+              document.getElementById("certificate_url").value = result.info.secure_url;
+          }
+      });
+
+      document.getElementById("upload_certificate").addEventListener("click", function() {
+          cloudinaryWidgetCertificate.open();
+      });
+
+      var cloudinaryWidgetPhotos = cloudinary.createUploadWidget({
+          cloudName: 'djlgki5uf', 
+          uploadPreset: 'python-uploads',
+          sources: ['local', 'camera'], 
+          multiple: true,
+          folder: 'webinar_photos',
+          maxFileSize: 5 * 1024 * 1024,
+          allowedFormats: ['jpg', 'jpeg', 'png'],
+      }, (error, result) => { 
+          if (!error && result && result.event === "success") { 
+              let currentPhotos = document.getElementById("photos_url").value;
+              let newPhotoUrl = result.info.secure_url;
+              document.getElementById("photos_url").value = currentPhotos ? currentPhotos + ',' + newPhotoUrl : newPhotoUrl;
+          }
+      });
+
+      document.getElementById("upload_photos").addEventListener("click", function() {
+          cloudinaryWidgetPhotos.open();
+      });
+  </script>
+</body>
+</html>
+

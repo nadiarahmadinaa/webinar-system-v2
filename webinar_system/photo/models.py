@@ -7,5 +7,5 @@ from webinar.models import Webinar
 
 class Photos(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    image = CloudinaryField('image')
+    image = models.URLField(max_length=200, blank=True)
     webinar = models.ForeignKey(Webinar, related_name='photos', on_delete=models.CASCADE, null=True, blank=True)

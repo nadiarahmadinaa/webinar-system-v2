@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Certificates Preview</title>
+    <style>
+        #certificate-area {
+            position: relative;
+            width: {{ width }}px;
+            height: {{ height }}px;
+            border: 1px solid #ccc;
+            background-image: url('{{ webinar.certificate }}');
+            background-size: cover;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+        .draggable {
+            position: absolute;
+            cursor: move;
+        }
+        .resize-slider {
+            margin: 20px;
+        }
+        .my-4 {
+            margin: 16px 0;
+        }
+        .draggable-text {
+            position: absolute;
+            cursor: move;
+            padding: 5px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        .text-control {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Generate Certificates Preview for {{ webinar.webinar_name }}</h1>
+
+    <div id="certificate-area">
+        <img id="qr-code" src="{{ webinar.qr }}" class="draggable" width="100" />
+    </div>
+
+    <div>
+        <input type="range" id="qr-slider" class="resize-slider" min="50" max="200" value="100">
+    </div>
+
+    <div class="my-4">
+        <h2 class="text-lg font-semibold mb-2">Drag and drop your text</h2>
+        <label for="textSelect" class="block text-lg font-medium text-gray-700">Select Text to Add:</label>
+        <select id="textSelect" class="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500">
+            <option value="">Select text</option>
+            {% for field in data_keys %}
+            <option value="{{ field }}">{{ field }}</option>
+            {% endfor %}
+        </select><br>
+        <button type="button" onclick="addText()" class="inline-block bg-blue-500 text-white p-2 rounded-md hover:bg-blue-700 transition duration-300 font-bold w-full rounded">Add Text</button>
+    </div>
+
+    <div id="text-controls"></div>
+
+    <form method="post" action="" id="certificate-form">
+        {% csrf_token %}
+        <input type="hidden" name="qr_position" id="qr-position">
+        <input type="hidden" name="qr_size" id="qr-size">
+        <input type="hidden" name="text_data" id="text-data">
+        <label>
+            <input type="checkbox" name="release_public"> Release Certificate to Public
+        </label>
+        <button type="submit">Download as ZIP</button>
+    </form>
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const qrCode = document.getElementById('qr-code');
+            const qrSlider = document.getElementById('qr-slider');
+            const certificateArea = document.getElementById('certificate-area');
+            const textControls = document.getElementById('text-controls');
+            let dragging = false;
+            let draggingElement = null;
+
+            // Draggable QR Code
+            qrCode.addEventListener('mousedown', function(e) {
+                e.preventDefault();
+                let offsetX = e.clientX - qrCode.offsetLeft;
+                let offsetY = e.clientY - qrCode.offsetTop;
+
+                function mouseMoveHandler(e) {
+                    qrCode.style.left = `${e.clientX - offsetX}px`;
+                    qrCode.style.top = `${e.clientY - offsetY}px`;
+                }
+
+                function mouseUpHandler() {
+                    document.removeEventListener('mousemove', mouseMoveHandler);
+                    document.removeEventListener('mouseup', mouseUpHandler);
+                }
+
+                document.addEventListener('mousemove', mouseMoveHandler);
+                document.addEventListener('mouseup', mouseUpHandler);
+            });
+
+            // Resize QR Code
+            qrSlider.addEventListener('input', function() {
+                qrCode.style.width = `${qrSlider.value}px`;
+            });
+
+            // Add Text Function
+            window.addText = function() {
+                const select = document.getElementById('textSelect');
+                const text = select.value;
+                if (text.trim() === '') {
+                    alert('Please select some text.');
+                    return;
+                }
+
+                const textElement = document.createElement('div');
+                textElement.className = 'draggable-text';
+                textElement.style.left = '50%';
+                textElement.style.top = '50%';
+                textElement.style.transform = 'translate(-50%, -50%)';
+                textElement.textContent = text;
+
+                certificateArea.appendChild(textElement);
+
+                textElement.addEventListener('mousedown', function(e) {
+                    e.preventDefault();
+                    dragging = true;
+                    draggingElement = textElement;
+                    const rect = certificateArea.getBoundingClientRect();
+                    offsetX = e.clientX - rect.left - textElement.offsetLeft;
+                    offsetY = e.clientY - rect.top - textElement.offsetTop;
+                });
+
+                textElement.style.fontFamily = 'Arial';
+
+                document.addEventListener('mousemove', function(e) {
+                    if (dragging && draggingElement) {
+                        const rect = certificateArea.getBoundingClientRect();
+                        const mouseX = e.clientX - rect.left;
+                        const mouseY = e.clientY - rect.top;
+                        draggingElement.style.left = `${mouseX - offsetX}px`;
+                        draggingElement.style.top = `${mouseY - offsetY}px`;
+                    }
+                });
+
+                document.addEventListener('mouseup', function() {
+                    if (dragging) {
+                        dragging = false;
+                        draggingElement = null;
+                    }
+                });
+
+
+                // Create text control panel
+                const controlPanel = document.createElement('div');
+                controlPanel.className = 'text-control';
+                controlPanel.innerHTML = `
+                    <label>Selected Label: ${text}</label>
+                    <label>Adjust Size:</label>
+                    <input type="range" class="resize-slider" min="10" max="100" value="16">
+                    <label>Select Font:</label>
+                    <select class="font-selector">
+                        <option value="Arial">Arial</option>
+                        <option value="Courier New">Courier New</option>
+                        <option value="Georgia">Georgia</option>
+                        <option value="Times New Roman">Times New Roman</option>
+                        <option value="Verdana">Verdana</option>
+                    </select>
+                    <label>Select Color:</label>
+                    <input type="color" class="color-selector" value="#000000">
+                    <button type="button" class="remove-text">Remove</button>
+                `;
+                textControls.appendChild(controlPanel);
+
+                // Link control panel to text element
+                const slider = controlPanel.querySelector('.resize-slider');
+                slider.addEventListener('input', function() {
+                    textElement.style.fontSize = `${slider.value}px`;
+                });
+
+                const fontSelector = controlPanel.querySelector('.font-selector');
+                fontSelector.addEventListener('change', function() {
+                    textElement.style.fontFamily = fontSelector.value;
+                });
+
+                const colorSelector = controlPanel.querySelector('.color-selector');
+                colorSelector.addEventListener('input', function() {
+                    textElement.style.color = colorSelector.value;
+                });
+
+                controlPanel.querySelector('.remove-text').addEventListener('click', function() {
+                    textElement.remove();
+                    controlPanel.remove();
+                });
+
+                document.getElementById('certificate-form').addEventListener('submit', function(e) {
+                    const qrCode = document.getElementById('qr-code');
+                    const qrComputedStyle = window.getComputedStyle(qrCode);
+                    const qrPosition = {
+                        left: qrComputedStyle.left,
+                        top: qrComputedStyle.top
+                    };
+                    const qrSize = qrComputedStyle.width;
+
+                    document.getElementById('qr-position').value = JSON.stringify(qrPosition);
+                    document.getElementById('qr-size').value = qrSize;
+
+                    const textElements = document.querySelectorAll('.draggable-text');
+                    const textData = [];
+
+                    textElements.forEach(function(textElement) {
+                        const textComputedStyle = window.getComputedStyle(textElement);
+                        const textPosition = {
+                            left: textComputedStyle.left,
+                            top: textComputedStyle.top
+                        };
+                        const textSize = textComputedStyle.fontSize;
+                        const textFont = textComputedStyle.fontFamily;
+                        const textContent = textElement.textContent;
+                        const textColor = textComputedStyle.color;
+
+                        textData.push({
+                            content: textContent,
+                            position: textPosition,
+                            size: textSize,
+                            font: textFont,
+                            color: textColor,
+                        });
+                    });
+                    console.log("QR Position:", qrPosition);
+                    console.log("QR Size:", qrSize);
+                    console.log("Text Data:", textData);
+
+
+                    document.getElementById('text-data').value = JSON.stringify(textData);
+                });
+
+
+            };
+        });
+    </script>
+</body>
+</html>

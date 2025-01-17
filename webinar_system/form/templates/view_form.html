@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <h1>{{ form_instance.name }}</h1>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    {% for field in form_instance.fields %}
+      {% if field.type == 'file' %}
+        <!-- Hide the file input using CSS -->
+          <style>
+            input[type="url"] {
+                display: none;
+            }
+          </style>
+          
+      {% endif %}
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    
+  </form>
+  <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <ul id="errorList"></ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const errorFields = document.querySelectorAll('.is-invalid');
+        if (errorFields.length > 0) {
+        const errorList = document.getElementById('errorList');
+        errorFields.forEach(field => {
+            const errorMessages = field.nextElementSibling.querySelectorAll('p');
+            errorMessages.forEach(error => {
+            const listItem = document.createElement('li');
+            listItem.textContent = error.textContent;
+            errorList.appendChild(listItem);
+            });
+        });
+        
+        // Show the modal with errors
+        var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        errorModal.show();
+        }
+      const labels = document.querySelectorAll('input[type="url"]');
+      
+      labels.forEach(label => {
+        const labelName = label.getAttribute('name');
+        
+        // Create a button element with a unique id based on the label's name
+        const uploadButton = document.createElement('button');
+        uploadButton.type = 'button';
+        uploadButton.id = `upload_file_${labelName}`;  // Unique ID based on label's name
+        uploadButton.className = 'btn btn-secondary';
+        uploadButton.textContent = 'Upload File';
+    
+        // Insert the button after the label
+        label.parentNode.insertBefore(uploadButton, label);
+        
+        // Cloudinary upload widget initialization
+        const cloudinaryWidget = cloudinary.createUploadWidget({
+          cloudName: 'djlgki5uf', 
+          uploadPreset: 'python-uploads',
+          sources: ['local', 'camera'], 
+          multiple: false,
+          folder: 'webinar_certificates',
+          maxFileSize: 5 * 1024 * 1024,
+          allowedFormats: ['jpg', 'jpeg', 'png'],
+        }, (error, result) => { 
+          if (!error && result && result.event === "success") { 
+            // Update the associated input[type="url"] field with the Cloudinary URL
+            const buttonId = uploadButton.id;
+            const inputName = buttonId.replace('upload_file_', ''); // Extract the field name from button ID
+            
+            const inputField = document.querySelector(`input[name="${inputName}"]`);
+            if (inputField) {
+              inputField.value = result.info.secure_url;
+            }
+          }
+        });
+  
+        // Trigger Cloudinary upload widget when the button is clicked
+        uploadButton.addEventListener("click", function() {
+          cloudinaryWidget.open();
+        });
+      });
+    });
+  </script>
+  
+  <a href="{% url 'form:edit_form' form_instance.id %}" class="btn btn-secondary">Edit</a>
+  <a href="{% url 'form:delete_form' form_instance.id %}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this form?');">Delete</a>
+  
+  <!-- Cloudinary upload widget script -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.4.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://widget.cloudinary.com/v2.0/global/all.js"></script>
+  
+{% endblock %}

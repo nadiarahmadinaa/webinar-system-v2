@@ -1,10 +1,46 @@
-{% extends 'base.html' %}
-
 {% block content %}
   <h1>{{ webinar.webinar_name }}</h1>
   <p><strong>Date:</strong> {{ webinar.date }}</p>
   <p><strong>Time:</strong> {{ webinar.time }}</p>
   <p><strong>Organizer:</strong> {{ webinar.organizer }}</p>
   <p><strong>Description:</strong> {{ webinar.description }}</p>
+
+  {% if webinar.certificate %}
+    <p><strong>Certificate:</strong> <a href="{{ webinar.certificate }}">Download Certificate</a></p>
+  {% endif %}
+
+  {% if webinar.photos.all %}
+    <p><strong>Photos:</strong></p>
+    <ul>
+      {% for photo in webinar.photos.all %}
+        <li>
+          <img src="{{ photo.image.url }}" alt="Webinar Photo" class="img-thumbnail" style="max-width: 200px;">
+        </li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  <h2>Forms</h2>
+  {% if webinar.form_set.all %}
+    <ul>
+      {% for form in webinar.form_set.all %}
+        <li>
+          <strong>{{ form.name }}</strong>
+          <p>{{ form.type }}</p>
+          <a href="{% url 'form:view_form' form.id %}" class="btn btn-info">View</a>
+          <a href="{% url 'form:edit_form' form.id %}" class="btn btn-warning">Edit</a>
+          <a href="{% url 'form:delete_form' form.id %}" class="btn btn-danger">Delete</a>
+          <a href="{% url 'form:form_submission' form.id %}" class="btn btn-info">Submission</a>
+          <!-- <a href="{% url 'form:update_verified' form.id %}" class="btn btn-warning">Verify</a> -->
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>No forms available for this webinar.</p>
+  {% endif %}
+
+  <a href="{% url 'form:make_form' webinar.id %}" class="btn btn-success">Create New Form</a>
+  <a href="{% url 'webinar:generate_certificates' webinar.id %}" class="btn btn-success">Generate Certificates</a>
+  <a href="{% url 'webinar:verify_page' webinar.id %}" class="btn btn-success">Certified Participants</a>
   <a href="{% url 'webinar:webinar_home' %}" class="btn btn-primary">Back to Webinars</a>
 {% endblock %}

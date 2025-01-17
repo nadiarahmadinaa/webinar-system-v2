@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+  <h1>Generate Certificate for {{ webinar.name }}</h1>
+
+  <form method="post" data-webinar-id="{{ webinar.id }}">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-primary">Generate Certificate</button>
+  </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const errorContainer = document.createElement('div');
+      errorContainer.className = 'alert alert-danger';
+      errorContainer.style.display = 'none';
+      document.body.insertBefore(errorContainer, document.querySelector('form'));
+
+      // Handle form submission
+      document.querySelector('form').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+        const form = this;
+
+        fetch(form.action, {
+          method: form.method,
+          body: new FormData(form),
+          headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+        })
+        .then(response => {
+          if (response.headers.get('Content-Type').includes('application/json')) {
+            return response.json();
+          } else {
+            throw new Error('Non-JSON response');
+          }
+        })
+        .then(data => {
+          if (data.status === 'error') {
+            errorContainer.innerHTML = Object.values(data.errors).map(error => `<p>${error}</p>`).join('');
+            errorContainer.style.display = 'block';
+          } else {
+            errorContainer.style.display = 'none';
+            // Redirect to the success URL
+            window.location.href = `/webinar/generate_certificates_preview/${form.dataset.webinarId}/`;
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          // Optionally display a user-friendly error message
+          errorContainer.innerHTML = '<p>An unexpected error occurred. Please try again later.</p>';
+          errorContainer.style.display = 'block';
+        });
+      });
+    });
+</script>
+
+
+{% endblock %}

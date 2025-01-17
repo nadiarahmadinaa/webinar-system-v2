@@ -131,7 +131,7 @@ cloudinary.config(
     api_secret='0FBq4h_wrXnQZ9PAsaylow1sen0'
 )
 
-
+FONTS_DIR = BASE_DIR / 'fonts'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/

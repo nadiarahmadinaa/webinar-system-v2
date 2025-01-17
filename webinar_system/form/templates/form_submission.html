@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block content %}
+  <h1>Submissions for {{ form_instance.name }}</h1>
+
+  <form method="POST" action="{% url 'form:update_verified' form_instance.id %}">
+    {% csrf_token %}
+    
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Submission Time</th>
+          <th>Submitted By</th>
+          <!-- Dynamically generate column headers based on the first submission's data keys -->
+          {% if submissions %}
+            {% for key in submissions.0.data.keys %}
+              <th>{{ key }}</th>
+            {% endfor %}
+            <th>Verify</th>  <!-- New column for checkboxes -->
+          {% endif %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for submission in submissions %}
+          <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>{{ submission.submitted_at }}</td>
+            <td>{{ submission.user.username }}</td>  <!-- Assuming you have a user field in your model -->
+            
+            <!-- Loop through the data keys and display the corresponding value for each submission -->
+            {% for key in submissions.0.data.keys %}
+              <td>{{ submission.data|get_item:key }}</td>
+            {% endfor %}
+
+            <!-- Add a checkbox for verification if auto_verify is False -->
+            {% if not form_instance.webinar.auto_verify %}
+            <td>
+                {% if submission.webinarjoin_set.first.verified %}
+                    <input type="checkbox" name="verify_{{ submission.id }}" value="true" checked>
+                {% else %}
+                    <input type="checkbox" name="verify_{{ submission.id }}" value="true">
+                {% endif %}
+            </td>
+            {% endif %}
+          </tr>
+        {% empty %}
+          <tr>
+            <td colspan="5" class="text-center">No submissions yet.</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    
+    <button type="submit" class="btn btn-primary">Update Verification</button>
+  </form>
+
+  <a href="{% url 'webinar:webinar_home' %}" class="btn btn-secondary">Back to Forms</a>
+{% endblock %}
